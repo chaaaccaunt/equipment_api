@@ -14,11 +14,11 @@ export class EquipmentsModel extends Model<InferAttributes<EquipmentsModel>, Inf
   declare personalId: ForeignKey<PersonalModel["id"]>
 
   static associate({ models }: iModels.Database) {
-    this.hasOne(models.EquipmentModels, { foreignKey: "modelId", as: "model", onDelete: "NO ACTION" })
-    this.hasOne(models.Cabinets, { foreignKey: "cabinetId", as: "cabinet", onDelete: "NO ACTION" })
-    this.hasOne(models.Personals, { foreignKey: "personalId", as: "person", onDelete: "NO ACTION" })
+    this.belongsTo(models.EquipmentModels, { foreignKey: "modelId", as: "model", onDelete: "NO ACTION" })
+    this.belongsTo(models.Cabinets, { foreignKey: "cabinetId", as: "cabinet", onDelete: "NO ACTION" })
+    this.belongsTo(models.Personals, { foreignKey: "personalId", as: "person", onDelete: "NO ACTION" })
 
-    this.hasMany(models.Executions, { foreignKey: "equipmentId", as: "executions", onDelete: "NO ACTION" })
+    this.hasMany(models.Executions, { foreignKey: "equipmentId", as: "executions", onDelete: "SET NULL" })
   }
 
   declare model: NonAttribute<EquipmentModelsModel>
@@ -30,8 +30,8 @@ export class EquipmentsModel extends Model<InferAttributes<EquipmentsModel>, Inf
   declare static associations: {
     model: Association<EquipmentsModel, EquipmentModelsModel>
     cabinet: Association<EquipmentsModel, CabinetsModel>
-    executions: Association<EquipmentsModel, ExecutionsModel>
     person: Association<EquipmentsModel, PersonalModel>
+    executions: Association<EquipmentsModel, ExecutionsModel>
   };
 }
 

@@ -19,13 +19,13 @@ export class ExecutionsModel extends Model<InferAttributes<ExecutionsModel>, Inf
   declare agentId: ForeignKey<EmployeeModel["id"]>
 
   static associate({ models }: iModels.Database) {
-    this.hasOne(models.Equipments, { foreignKey: "equipmentId", as: "equipment", onDelete: "NO ACTION" })
-    this.hasOne(models.TypeofExecutions, { foreignKey: "typeofExecutionId", as: "typeofExecution", onDelete: "NO ACTION" })
-    this.hasOne(models.Personals, { foreignKey: "personalId", as: "personal", onDelete: "NO ACTION" })
-    this.hasOne(models.Employees, { foreignKey: "employeeId", as: "employee", onDelete: "NO ACTION" })
-    this.hasOne(models.Agents, { foreignKey: "agentId", as: "agent", onDelete: "NO ACTION" })
+    this.belongsTo(models.Equipments, { foreignKey: "equipmentId", as: "equipment", onDelete: "NO ACTION" })
+    this.belongsTo(models.TypeofExecutions, { foreignKey: "typeofExecutionId", as: "typeofExecution", onDelete: "NO ACTION" })
+    this.belongsTo(models.Personals, { foreignKey: "personalId", as: "personal", onDelete: "NO ACTION" })
+    this.belongsTo(models.Employees, { foreignKey: "employeeId", as: "employee", onDelete: "NO ACTION" })
+    this.belongsTo(models.Agents, { foreignKey: "agentId", as: "agent", onDelete: "NO ACTION" })
 
-    this.hasMany(models.Notes, { foreignKey: "executionId", as: "notes", onDelete: "CASCADE" })
+    this.hasMany(models.Notes, { foreignKey: "executionId", as: "notes", onDelete: "SET NULL" })
   }
 
   declare equipment: NonAttribute<EquipmentsModel>

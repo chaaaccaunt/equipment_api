@@ -4,7 +4,6 @@ import { AgentsModel, getAgentsModel } from "./models/Agents"
 import { CabinetsModel, getCabinetsModel } from "./models/Cabinets"
 import { ContactsModel, getContactsModel } from "./models/Contacts"
 import { EmployeeModel, getEmployeeModel } from "./models/Employees"
-import { EmployeePositionsModel, getEmployeePositionsModel } from "./models/EmployeePositions"
 import { EquipmentBrandsModel, getEquipmentBrandsModel } from "./models/EquipmentBrands"
 import { EquipmentModelsModel, getEquipmentModelsModel } from "./models/EquipmentModels"
 import { EquipmentsModel, getEquipmentsModel } from "./models/Equipments"
@@ -13,24 +12,27 @@ import { NotesModel, getNotesModel } from "./models/Notes"
 import { PersonalModel, getPersonalModel } from "./models/Personal"
 import { PhotoGalleryModel, getPhotoGalleryModel } from "./models/PhotoGallery"
 import { TypeofExecutionsModel, getTypeofExecutionsModel } from "./models/TypeofExecutions"
+import { getUserModel, UserModel } from "./models/User"
+import { getTypeofEquipmentsModel, TypeofEquipmentsModel } from "./models/TypeofEquipments"
 
 export const Database = {
   sequelize,
   Sequelize,
   models: {
+    Equipments: getEquipmentsModel(sequelize),
+    TypeofEquipments: getTypeofEquipmentsModel(sequelize),
+    EquipmentModels: getEquipmentModelsModel(sequelize),
+    EquipmentBrands: getEquipmentBrandsModel(sequelize),
     Agents: getAgentsModel(sequelize),
     Cabinets: getCabinetsModel(sequelize),
     Contacts: getContactsModel(sequelize),
-    EmployeePositions: getEmployeePositionsModel(sequelize),
     Employees: getEmployeeModel(sequelize),
-    EquipmentBrands: getEquipmentBrandsModel(sequelize),
-    EquipmentModels: getEquipmentModelsModel(sequelize),
-    Equipments: getEquipmentsModel(sequelize),
     Executions: getExecutionsModel(sequelize),
     Notes: getNotesModel(sequelize),
     Personals: getPersonalModel(sequelize),
     PhotoGallery: getPhotoGalleryModel(sequelize),
-    TypeofExecutions: getTypeofExecutionsModel(sequelize)
+    TypeofExecutions: getTypeofExecutionsModel(sequelize),
+    Users: getUserModel(sequelize),
   }
 }
 
@@ -43,13 +45,14 @@ export interface iDatabase {
   Cabinets: CabinetsModel
   Contacts: ContactsModel
   Employee: EmployeeModel
-  EmployeePositions: EmployeePositionsModel
   EquipmentBrands: EquipmentBrandsModel
   EquipmentModels: EquipmentModelsModel
+  TypeofEquipmentsModel: TypeofEquipmentsModel
   Equipments: EquipmentsModel
   Executions: ExecutionsModel
   Notes: NotesModel
   Personal: PersonalModel
   PhotoGallery: PhotoGalleryModel
   TypeofExecutions: TypeofExecutionsModel
+  Users: UserModel
 }

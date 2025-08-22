@@ -1,66 +1,66 @@
-import { iRoute, iUserToken } from "@/libs";
-import { EquipmentService } from "@/services/EquipmentService";
+import { iRoute } from "@/libs";
+import { ModelsService } from "@/services/ModelsService";
 import { InferAttributes, InferCreationAttributes } from "sequelize";
 
-export class EquipmentDTO {
+export class ModelsDTO {
   readonly routes: iRoute[] = [
     {
-      url: "/equipments",
-      callback: this.getList.bind(this),
+      url: "/models",
+      callback: this.getAll.bind(this),
       method: "GET",
       requireAuth: true,
-    } as iRoute<{}, iModels.Models<"Equipments">[]>,
+    } as iRoute<{}, iModels.Models<"EquipmentModels">[]>,
     {
-      url: "/equipments\\?id=[0-9]{1,}",
+      url: "/models\\?id=[0-9]{1,}",
       callback: this.getById.bind(this),
       method: "GET",
       requireAuth: true,
-    } as iRoute<{ id: number }, iModels.Models<"Equipments">>,
+    } as iRoute<{ id: number }, iModels.Models<"EquipmentModels">>,
     {
-      url: "/equipments",
+      url: "/models",
       callback: this.create.bind(this),
       method: "POST",
       requireAuth: true,
-    } as iRoute<InferCreationAttributes<iModels.Models<"Equipments">>, iModels.Models<"Equipments">>,
+    } as iRoute<InferCreationAttributes<iModels.Models<"EquipmentModels">>, iModels.Models<"EquipmentModels">>,
     {
-      url: "/equipments",
+      url: "/models",
       callback: this.update.bind(this),
       method: "PUT",
       requireAuth: true,
-    } as iRoute<InferAttributes<iModels.Models<"Equipments">>, iModels.Models<"Equipments">>,
+    } as iRoute<InferAttributes<iModels.Models<"EquipmentModels">>, iModels.Models<"EquipmentModels">>,
     {
-      url: "/equipments",
+      url: "/models",
       callback: this.delete.bind(this),
       method: "DELETE",
       requireAuth: true,
     } as iRoute<{ id: number }, boolean>,
   ]
-  private service: EquipmentService
+  private service: ModelsService
   constructor(base: iModels.Database) {
-    this.service = new EquipmentService(base)
+    this.service = new ModelsService(base)
   }
-  private getList(): Promise<{ result: iModels.Models<"Equipments">[] }> {
+  private getAll(): Promise<{ result: iModels.Models<"EquipmentModels">[] }> {
     return new Promise((resolve, reject) => {
       this.service.getList()
         .then((models) => resolve({ result: models.result }))
         .catch(error => reject(error))
     })
   }
-  private getById({ }, payload: { id: number }): Promise<{ result: iModels.Models<"Equipments"> | null }> {
+  private getById({ }, payload: { id: number }): Promise<{ result: iModels.Models<"EquipmentModels"> | null }> {
     return new Promise((resolve, reject) => {
       this.service.getById(payload.id)
         .then((models) => resolve({ result: models.result }))
         .catch(error => reject(error))
     })
   }
-  private create({ }, payload: InferCreationAttributes<iModels.Models<"Equipments">>): Promise<{ result: iModels.Models<"Equipments"> }> {
+  private create({ }, payload: InferCreationAttributes<iModels.Models<"EquipmentModels">>): Promise<{ result: iModels.Models<"EquipmentModels"> }> {
     return new Promise((resolve, reject) => {
       this.service.create(payload)
         .then((models) => resolve({ result: models.result }))
         .catch(error => reject(error))
     })
   }
-  private update({ }, payload: InferAttributes<iModels.Models<"Equipments">>): Promise<{ result: iModels.Models<"Equipments"> }> {
+  private update({ }, payload: InferAttributes<iModels.Models<"EquipmentModels">>): Promise<{ result: iModels.Models<"EquipmentModels"> }> {
     return new Promise((resolve, reject) => {
       this.service.update(payload)
         .then((models) => resolve({ result: models.result }))

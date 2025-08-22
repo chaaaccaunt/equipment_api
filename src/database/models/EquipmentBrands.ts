@@ -3,15 +3,16 @@ import { EquipmentsModel } from "./Equipments";
 
 export class EquipmentBrandsModel extends Model<InferAttributes<EquipmentBrandsModel>, InferCreationAttributes<EquipmentBrandsModel>> {
   declare id: CreationOptional<number>
+  declare name: string
 
   static associate({ models }: iModels.Database) {
-    this.hasMany(models.EquipmentModels, { foreignKey: "brandId", as: "equips", onDelete: "NO ACTION" })
+    this.hasMany(models.EquipmentModels, { foreignKey: "brandId", as: "models", onDelete: "SET NULL" })
   }
 
-  declare equips: NonAttribute<EquipmentsModel[]>
+  declare models: NonAttribute<EquipmentsModel[]>
 
   declare static associations: {
-    equips: Association<EquipmentBrandsModel, EquipmentsModel>
+    models: Association<EquipmentBrandsModel, EquipmentsModel>
   };
 }
 
@@ -22,6 +23,10 @@ export function getEquipmentBrandsModel(sequelize: Sequelize) {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
       }
     },
     {

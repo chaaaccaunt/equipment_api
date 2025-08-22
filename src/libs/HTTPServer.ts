@@ -5,7 +5,8 @@ import { parse } from "querystring"
 export interface iHTTPServer {
   VAR_ORIGIN: string
   VAR_COOKIE_NAME: string
-  VAR_TOKEN: string
+  VAR_TOKEN: string,
+  VAR_JWT_TOKEN: string
 }
 
 export interface iUserToken { }
@@ -37,24 +38,28 @@ export interface iRoute<Payload = any, Result = any> {
   url: string
   method: "GET" | "POST" | "PUT" | "DELETE"
   requireAuth: boolean
-  callback: (user: iUserToken, payload: Payload) => Promise<{ result: Result }>
+  callback?: (user: iUserToken, payload: Payload) => Promise<{ result: Result }>
+  authorization?: (request: IncomingMessage, response: ServerResponse, payload: any) => void
   validator?: IValidate
 }
 
 export class HTTPServer {
   public server: Server
   private routes: Map<string, iRoute & { reg: RegExp }> = new Map()
+  private origin: string
   private cookieName = new RegExp(`^${process.env.VAR_COOKIE_NAME}=`)
   constructor() {
-    if (!process.env.VAR_ORIGIN) throw Error("VAR_ORIGIN is missing")
+    if (!process.env.VAR_ORIGIN) throw Error("VAR_ORIGIN is missing");
+    this.origin = process.env.VAR_ORIGIN
     this.server = createServer((request, response) => this.requestHandler(request, response))
   }
   private assignJsonFunction(response: ServerResponse): ({ error, status, result }: { error: boolean, status: number, result: any }) => void {
-    return function ({ error, status, result }) {
+    return ({ error, status, result }) => {
       response.writeHead(status, {
-        "access-control-allow-credentials": "true",
-        "access-control-allow-origin": process.env.VAR_DEBUG ? "*" : process.env.VAR_ORIGIN,
-        "content-type": "application/json; charset=utf-8"
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "http://ui.equipment.local:8080",
+        "Access-Control-Allow-Headers": "Origin, Content-Type, Accept",
+        "Content-Type": "application/json; charset=utf-8",
       })
       return response.end(JSON.stringify({ error, response: result }))
     }
@@ -76,6 +81,7 @@ export class HTTPServer {
       if (query) url = request.url.split("?")[0]
       else url = request.url
       const match = this.routes.get(`${request.method}:${url}`)
+      if (process.env.VAR_DEBUG) console.log(match)
       if (!match) return response.json({ error: true, status: 404, result: false });
       if (query) {
         if (!match.reg.test(request.url)) return response.json({ error: true, status: 404, result: false })
@@ -89,7 +95,8 @@ export class HTTPServer {
         if (match.validator) {
           const valid = this.payloadValidator(payload, match.validator)
           if (valid.error) return response.json({ error: true, status: 404, result: valid.message })
-        }
+        };
+        if (match.requireAuth && !this.tokenValidator(request)) return response.json({ error: true, status: 403, result: "Пройдите процедуру авторизации" })
         return this.endpointExecutor(request, response, match, payload)
       }
       catch (error: any) {
@@ -101,28 +108,34 @@ export class HTTPServer {
     return new Promise((resolve) => {
       if (route.requireAuth) {
         const valid = this.tokenValidator(request)
-        if (!valid) response.json({ error: true, status: 403, result: false });
-        return resolve()
+        if (!valid) {
+          response.json({ error: true, status: 403, result: false });
+          return resolve()
+        }
       }
+      if (route.authorization) return route.authorization(request, response, payload)
+      if (!route.callback) return response.json({ error: true, status: 500, result: false })
       route.callback(request.user, payload)
         .then(({ result }) => {
-          response.json({ error: false, result, status: 200 })
-          return resolve()
+          if (process.env.VAR_DEBUG) console.log(result)
+          return resolve(response.json({ error: false, result, status: 200 }))
         })
         .catch((error) => {
-          response.json({ error: true, result: false, status: 400 })
-          return resolve()
+          if (process.env.VAR_DEBUG) console.log(error)
+          return resolve(response.json({ error: true, result: false, status: 500 }))
         })
     })
   }
   private tokenValidator(request: IncomingMessage) {
     if (!request.headers.cookie || !request.headers.cookie.length) return false
     const cookies = request.headers.cookie.split(";")
-    if (!process.env.VAR_TOKEN) throw new Error("missing VAR_TOKEN")
     for (let i = 0; i < cookies.length; i++) {
       if (this.cookieName.test(cookies[i].trim())) {
-        return verify(cookies[i].trim().split("=")[1], process.env.VAR_TOKEN, (err, data) => {
-          if (err) return false
+        return verify(cookies[i].split("=")[1].trim(), process.env.VAR_JWT_TOKEN, (err, data) => {
+          if (err) {
+            if (process.env.VAR_DEBUG) console.log(err)
+            return false
+          }
           request.user = data as iUserToken
           return true
         })
