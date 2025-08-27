@@ -81,7 +81,7 @@ export class HTTPServer {
       if (query) url = request.url.split("?")[0]
       else url = request.url
       const match = this.routes.get(`${request.method}:${url}`)
-      if (process.env.VAR_DEBUG) console.log(match)
+      if (process.env.VAR_DEBUG) console.log("route", match)
       if (!match) return response.json({ error: true, status: 404, result: false });
       if (query) {
         if (!match.reg.test(request.url)) return response.json({ error: true, status: 404, result: false })
@@ -97,6 +97,7 @@ export class HTTPServer {
           if (valid.error) return response.json({ error: true, status: 404, result: valid.message })
         };
         if (match.requireAuth && !this.tokenValidator(request)) return response.json({ error: true, status: 403, result: "Пройдите процедуру авторизации" })
+        if (process.env.VAR_DEBUG) console.log("payload", payload)
         return this.endpointExecutor(request, response, match, payload)
       }
       catch (error: any) {
@@ -121,7 +122,7 @@ export class HTTPServer {
           return resolve(response.json({ error: false, result, status: 200 }))
         })
         .catch((error) => {
-          if (process.env.VAR_DEBUG) console.log(error)
+          if (process.env.VAR_DEBUG) console.log(error?.message ? error.message : error)
           return resolve(response.json({ error: true, result: false, status: 500 }))
         })
     })

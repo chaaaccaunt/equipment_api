@@ -4,7 +4,21 @@ export class EquipmentService {
   constructor(private base: iModels.Database) { }
   getList(): Promise<{ result: iModels.Models<"Equipments">[] }> {
     return new Promise((resolve, reject) => {
-      this.base.models.Equipments.findAll()
+      this.base.models.Equipments.findAll({
+        include: [
+          { association: this.base.models.Equipments.associations.cabinet },
+          {
+            association: this.base.models.Equipments.associations.model,
+            include: [
+              { association: this.base.models.EquipmentModels.associations.brand },
+              { association: this.base.models.EquipmentModels.associations.models },
+              { association: this.base.models.EquipmentModels.associations.type }
+            ]
+          },
+          { association: this.base.models.Equipments.associations.person },
+          { association: this.base.models.Equipments.associations.executions },
+        ]
+      })
         .then((list) => resolve({ result: list }))
         .catch(error => reject(error))
     })

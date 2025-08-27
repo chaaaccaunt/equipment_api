@@ -10,6 +10,7 @@ import { UserAuth } from "@/services/UserService";
 import { PersonalDTO } from "@/dto/PersonalDTO";
 import { ModelsDTO } from "@/dto/ModelsDTO";
 import { BrandsDTO } from "@/dto/BrandsDTO";
+import { TypesDTO } from "@/dto/TypesDTO";
 
 const equipments = new EquipmentDTO(Database)
 const cabinets = new CabinetDTO(Database)
@@ -17,6 +18,7 @@ const personal = new PersonalDTO(Database)
 const authorization = new UserAuth(Database)
 const brands = new BrandsDTO(Database)
 const models = new ModelsDTO(Database)
+const types = new TypesDTO(Database)
 
 const httpServer = new HTTPServer()
 httpServer.use(equipments.routes)
@@ -25,6 +27,7 @@ httpServer.use(personal.routes)
 httpServer.use(authorization.routes)
 httpServer.use(brands.routes)
 httpServer.use(models.routes)
+httpServer.use(types.routes)
 
 Database.sequelize.sync({ force: true })
   .then(async () => {

@@ -6,7 +6,7 @@ export class TypeofEquipmentsModel extends Model<InferAttributes<TypeofEquipment
   declare name: string
 
   static associate({ models }: iModels.Database) {
-    this.hasMany(models.EquipmentModels, { foreignKey: "modelId", as: "models", onDelete: "SET NULL" })
+    this.hasMany(models.EquipmentModels, { foreignKey: "typeId", as: "models", onDelete: "SET NULL" })
   }
 
   declare models: NonAttribute<EquipmentsModel[]>

@@ -47,7 +47,7 @@ export interface iDatabase {
   Employee: EmployeeModel
   EquipmentBrands: EquipmentBrandsModel
   EquipmentModels: EquipmentModelsModel
-  TypeofEquipmentsModel: TypeofEquipmentsModel
+  TypeofEquipments: TypeofEquipmentsModel
   Equipments: EquipmentsModel
   Executions: ExecutionsModel
   Notes: NotesModel
